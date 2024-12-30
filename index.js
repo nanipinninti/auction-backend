@@ -1,6 +1,7 @@
 const express = require("express")
 const connectDB = require("./db/connectDB")
 require("dotenv").config()
+
 // import adminAuthRouter from './routes/admin.auth.route'
 const app = express()
 
