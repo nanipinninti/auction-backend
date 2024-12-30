@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const Player = require('./player.model');
-const Franchise = require('./franchise.model');
-const Set = require('./set.model');
+const playerSchema = require('./player.schema');
+const franchiseSchema = require('./franchise.schema');
+const setSchema = require('./set.schema');
 const Customer = require('./customer.model'); // Assuming you have a Customer model
 
 const auctionSchema = new mongoose.Schema({
@@ -12,7 +12,8 @@ const auctionSchema = new mongoose.Schema({
     },
     auction_name: { 
         type: String, 
-        required: true 
+        required: true ,
+        unique : true
     },
     auction_date: { 
         type: String, 
@@ -22,24 +23,9 @@ const auctionSchema = new mongoose.Schema({
         type: String, 
         required: true 
     },
-    players: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Player'
-        }
-    ],
-    franchises: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Franchise'
-        }
-    ],
-    sets: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Set'
-        }
-    ]
+    players: [playerSchema],
+    franchises: [franchiseSchema],
+    sets: [setSchema]
 });
 
 // Create the Auction model

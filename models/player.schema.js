@@ -1,0 +1,30 @@
+const mongoose = require('mongoose');
+const Stats = require('./stat.schema'); // Import the Stats model
+const { v4: uuidv4 } = require('uuid');  
+
+const playerSchema = new mongoose.Schema({
+    player_id: { 
+        type: String, 
+        default: uuidv4
+      },
+    set_no: { type: Number, required: true },
+    player_name: { type: String, required: true },
+    base_price: { type: Number, required: true },
+    age: { type: Number, required: true },
+    country: { type: String, required: true },
+    status: { 
+        type: String, 
+        enum: ['Available', 'Sold'], 
+        default: 'Available' 
+    },
+    Type: { 
+        type: String, 
+        enum: ['batter', 'bowler', 'allrounder', 'keeper'], 
+        required: true 
+    },
+    sold_price: { type: Number, default: 0 },
+    stats: {Stats}
+});
+
+
+module.exports = playerSchema;

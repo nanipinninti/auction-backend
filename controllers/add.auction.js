@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Auction = require('../models/auction.model'); // Import the Auction model
+const Auction = require('../models/auction.model'); 
+const statsSchema = require("../models/set.schema")
 const router = express.Router();
 
 
@@ -39,11 +40,57 @@ const addAuction = async (req, res) => {
     }
 };
 
-const addSets = async (req,res)=>{
-    const {setData} = req.body
-    const customer_id = req.customer_id
-    console.log(setData,customer_id)
-    return res.status(201).json({message :"entered"})
-}
+
+const addSets = async (req, res) => {
+    const { setData, auction_id } = req.body; // `setData` contains new set data to append
+    const customer_id = req.customer_id;     // Authenticated customer's ID
+
+    try {
+        // Step 1: Find the auction by auction_id
+        const auction = await Auction.findOne({ _id: auction_id });
+        if (!auction) {
+            return res.status(404).json({ message: "Auction not found" });
+        }
+
+        // Step 2: Check if the customer_id matches the auction owner
+        if (auction.customer_id.toString() !== customer_id) {
+            return res.status(403).json({ message: "Invalid customer, this is not your auction" });
+        }
+
+        // Step 3: Check for duplicate `set_no` in the existing `sets` array
+        const existingSetNos = auction.sets.map((set) => set.set_no);
+        for (const set of setData) {
+            if (existingSetNos.includes(set.set_no)) {
+                return res.status(400).json({
+                    message: `Set with set_no ${set.set_no} already exists`,
+                });
+            }
+        }
+
+        // Step 4: Append the new sets to the `sets` array
+        auction.sets.push(...setData);
+
+        // Step 5: Save the updated auction document
+        await auction.save();
+
+        // Step 6: Send a success response
+        res.status(201).json({
+            message: "Sets added successfully!",
+            sets: auction.sets,
+        });
+    } catch (error) {
+        console.error("Error during adding sets:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+};
+
+
+
+
+
 
 module.exports = {addAuction,addSets};
