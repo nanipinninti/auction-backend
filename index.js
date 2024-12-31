@@ -14,6 +14,16 @@ app.use("/customer",customerAuthRouter)
 
 const auctionRouter = require("./routes/auction.route")
 app.use("/auction",auctionRouter)
+
+const playersRouter = require("./routes/players.route")
+app.use("/players",playersRouter)
+
+const franchiseAuthRouter = require('./routes/franchise.auth.route')
+app.use("/franchise", franchiseAuthRouter)
+
+const auctioneerAuthRouter = require("./routes/auctioneer.auth.route")
+app.use("/auctioneer",auctioneerAuthRouter)
+
 const PORT = process.env.PORT || 5001
 app.listen(PORT,()=>{
     connectDB()
