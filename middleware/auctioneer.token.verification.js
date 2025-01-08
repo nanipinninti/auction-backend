@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const secretKey = process.env.AUCTIONEER_JWT_TOKEN; 
 
-const verifyCustomerToken = (req, res, next) => {
+const verifyAuctioneerToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
     if (!authHeader) {

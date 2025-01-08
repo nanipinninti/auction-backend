@@ -26,10 +26,9 @@ const getAuctionList = async (req,res)=>{
 }
 
 
-
 const getAuctionDetailsByAuctionId = async (req, res) => {
     try {
-        const { auction_id } = req.query; // Extract the auction_id from query parameters
+        const { auction_id } = req.query; // Extract the auction_id from query paramete
 
         // Step 1: Validate if auction_id is provided
         if (!auction_id) {
@@ -61,7 +60,49 @@ const getAuctionDetailsByAuctionId = async (req, res) => {
 };
 
 const getFranchiseDetails = async (req,res)=>{
-    
+    const {auction_id} = req.query
+    if (!auction_id) {
+        return res.status(400).json({ error: 'Auction ID is required' });
+    }
+    try{
+        const objectId = new mongoose.Types.ObjectId(auction_id);
+        const auction = await Auction.findOne({_id:objectId})
+
+        if(!auction){
+            return res.status(404).json({ error: 'Auction not found' });
+        }
+        const franchises = await Auction.aggregate([
+            {
+                $match : {
+                    _id : objectId
+                }
+            },
+            {
+                $unwind : "$franchises"
+            },
+            {
+                $lookup : {
+                    from : "franchises",
+                    localField : "franchises.franchise_id",
+                    foreignField : "_id",
+                    as : "FranchiseDate"
+                }
+            },
+            {
+                $project : {
+                    _id : 0,
+                    FranchiseDate : 1
+                }
+            }
+        ])
+        return res.status(200).json(franchises)
+    }catch(error){
+        console.log("Error : ",error)
+        return res.status(201).json({
+            message : "Internval Servor Error"
+        })
+    }
 }
 
-module.exports = {getAuctionList,getAuctionDetailsByAuctionId}
+
+module.exports = {getAuctionList,getAuctionDetailsByAuctionId,getFranchiseDetails}

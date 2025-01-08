@@ -14,6 +14,10 @@ const auctionSchema = new mongoose.Schema({
         required: true ,
         unique : true
     },
+    auction_img : {
+        type: String,
+        default : "#"
+    },
     auction_date: { 
         type: String, 
         required: true 
