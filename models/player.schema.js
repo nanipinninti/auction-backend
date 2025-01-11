@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const Stats = require('./stat.schema'); // Import the Stats model
-const { v4: uuidv4 } = require('uuid');  
+const Stats = require('./stat.schema'); 
 
 const playerSchema = new mongoose.Schema({
     set_no: { type: Number, required: true },

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const secretKey = process.env.AUCTIONEER_JWT_TOKEN; 
+const secretKey = process.env.AUCTIONEER_JWT_TOKEN
 
 const verifyAuctioneerToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -10,9 +10,13 @@ const verifyAuctioneerToken = (req, res, next) => {
     }
 
     const token = authHeader.replace("Bearer ", "");
-
-    jwt.verify(token, secretKey, (err, decoded) => {
+    
+    jwt.verify(token, process.env.AUCTIONEER_JWT_TOKEN, (err, decoded) => {
         if (err) {
+            console.log("Invalid TOken : " ,token)
+            
+      console.log("Key used to check authenctication : ",process.env.AUCTIONEER_JWT_TOKEN);
+
             return res.status(500).send({ message: 'Failed to authenticate token.' });
         }
 
