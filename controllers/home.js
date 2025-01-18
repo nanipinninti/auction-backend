@@ -5,8 +5,8 @@ const UpcomingAuctions = async (req,res)=>{
     try{
         const auctions = await Auction.find({})
         const upcomingAuctions = auctions
-        .map(({ _id, auction_name, auction_date, auction_img }) => ({ _id, auction_name, auction_date, auction_img }))
-        .filter(auction => new Date(auction.auction_date) >= new Date());
+        .map(({ _id, auction_name, auction_date, auction_img,status }) => ({ _id, auction_name, auction_date, auction_img,status }))
+        .filter(auction => auction.status==="upcoming");
         return res
         .status(201)
         .json({message : "Success",upcomingAuctions})
@@ -23,8 +23,8 @@ const CompletedAuctions = async (req,res)=>{
     try{
         const auctions = await Auction.find({})
         const completedAuctions = auctions
-        .map(({ _id, auction_name, auction_date, auction_img }) => ({ _id, auction_name, auction_date, auction_img }))
-        .filter(auction => new Date(auction.auction_date) < new Date());
+        .map(({ _id, auction_name, auction_date, auction_img,status }) => ({ _id, auction_name, auction_date, auction_img,status }))
+        .filter(auction => auction.status==="completed");
         return res
         .status(201)
         .json({message : "Success",completedAuctions})
@@ -36,8 +36,25 @@ const CompletedAuctions = async (req,res)=>{
         .json({message : "Failed",error})
     }
 }
+const LiveAuctions = async (req,res)=>{
+    try{
+        const auctions = await Auction.find({})
+        const live_auctions = auctions
+        .map(({ _id, auction_name, auction_date, auction_img,status }) => ({ _id, auction_name, auction_date, auction_img ,status}))
+        .filter(auction => auction.status==="ongoing" ||auction.status==="pause" );
+        return res
+        .status(201)
+        .json({message : "Success",live_auctions})
+        
+    }catch(error){
+        console.log("Error while getting ongoing Auctions",error)
+        return res
+        .status(401)
+        .json({message : "Failed",error})
+    }
+}
 
-module.exports = {UpcomingAuctions,CompletedAuctions}
+module.exports = {UpcomingAuctions,CompletedAuctions,LiveAuctions}
 
 // [
 //   {

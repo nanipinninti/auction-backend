@@ -24,7 +24,7 @@ const login = async (req, res) => {
         }
 
         // Generate token and set it as a cookie
-        generateAuctioneerToken(res, auctioneer._id);
+        const auctioneer_token = generateAuctioneerToken(res, auctioneer._id);
 
         // Remove password from the response (optional)
         const auctioneerResponse = { ...auctioneer._doc, password: undefined };
@@ -33,6 +33,7 @@ const login = async (req, res) => {
             success: true,
             message: "Logged in successfully",
             auctioneer: auctioneerResponse,
+            auctioneer_token
         });
     } catch (error) {
         console.error("Error during login:", error);

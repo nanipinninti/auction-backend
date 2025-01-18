@@ -104,5 +104,4 @@ const getFranchiseDetails = async (req,res)=>{
     }
 }
 
-
 module.exports = {getAuctionList,getAuctionDetailsByAuctionId,getFranchiseDetails}

@@ -48,5 +48,38 @@ const addPlayers = async (req, res) => {
     }
 };
 
-module.exports = { addPlayers };
+const GetPlayerDetails = async (req,res) =>{
+    const {player_id,auction_id} = req.body
+    try{
+        const auction = await Auction.findOne({_id : auction_id})
+        if (!auction) {
+            return res.status(404).json({
+                success: false,
+                message: "Auction does not exist",
+            });
+        }
+
+        const player = auction.players.find(
+            (player) => player._id.toString() === player_id
+        );
+        if (!player) {
+            return res
+                .status(403)
+                .json({ message: "Player is not registered in this Auction!" });
+        }
+        res.status(201).json({
+            success : true,
+            player
+        });
+
+    }catch (error) {
+        console.error("Error while getting Player info :", error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+}
+module.exports = { addPlayers,GetPlayerDetails };
 

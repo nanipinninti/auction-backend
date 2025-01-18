@@ -1,15 +1,13 @@
 const jwt = require('jsonwebtoken');
 
-const secretKey = process.env.ADMIN_JWT_TOKEN; 
+const secretKey = process.env.ADMIN_JWT_TOKEN;
 
-const verifyCustomerToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
+const verifyAdminToken = (req, res, next) => {
+    const token = req.cookies['admin_token'];  
 
-    if (!authHeader) {
+    if (!token) {
         return res.status(403).send({ message: 'No token provided.' });
     }
-
-    const token = authHeader.replace("Bearer ", "");
 
     jwt.verify(token, secretKey, (err, decoded) => {
         if (err) {
@@ -17,7 +15,7 @@ const verifyCustomerToken = (req, res, next) => {
         }
 
         // If everything is good, save the decoded token to request for use in other routes
-        req.admin_id = decoded._id;
+        req.admin_id = decoded._id;  // Store admin ID in the request
         next();
     });
 };

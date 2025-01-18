@@ -1,23 +1,18 @@
-const jwt = require('jsonwebtoken');
-
-const secretKey = process.env.AUCTIONEER_JWT_TOKEN
+const jwt = require("jsonwebtoken");
 
 const verifyAuctioneerToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
+    // Extract token from cookies or Authorization header
+    const token = req.cookies.auctioneer_token || 
+                  (req.headers.authorization && req.headers.authorization.split(" ")[1]); 
 
-    if (!authHeader) {
-        return res.status(403).send({ message: 'No token provided.' });
+    if (!token) {
+        return res.status(403).send({ message: "No token provided." });
     }
 
-    const token = authHeader.replace("Bearer ", "");
-    
     jwt.verify(token, process.env.AUCTIONEER_JWT_TOKEN, (err, decoded) => {
         if (err) {
-            console.log("Invalid TOken : " ,token)
-            
-      console.log("Key used to check authenctication : ",process.env.AUCTIONEER_JWT_TOKEN);
-
-            return res.status(500).send({ message: 'Failed to authenticate token.' });
+            console.log("Invalid Token:", token);
+            return res.status(500).send({ message: "Failed to authenticate token." });
         }
 
         // If everything is good, save the decoded token to request for use in other routes
@@ -26,4 +21,4 @@ const verifyAuctioneerToken = (req, res, next) => {
     });
 };
 
-module.exports = {verifyAuctioneerToken};
+module.exports = { verifyAuctioneerToken };

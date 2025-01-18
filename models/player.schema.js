@@ -9,7 +9,7 @@ const playerSchema = new mongoose.Schema({
     country: { type: String, required: true },
     status: { 
         type: String, 
-        enum: ['Available', 'Sold'], 
+        enum: ['Available', 'Sold','Unsold'], 
         default: 'Available' 
     },
     Type: { 
