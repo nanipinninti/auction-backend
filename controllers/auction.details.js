@@ -2,6 +2,90 @@ const express = require("express")
 const Auction = require("../models/auction.model")
 const {mongoose} = require("mongoose")
 
+const GetSets = async (req,res)=>{
+    const {auction_id} = req.query
+    if (!auction_id){
+        return res
+                .status(401)
+                .json({
+                    success : false, 
+                    message : "Auction Id is required"
+                })
+    }
+    try{
+        const auction = await Auction.findOne({_id : auction_id}).select('sets')
+        if (!auction){
+            return res
+            .status(401)
+            .json({
+                success : false, 
+                message : "Auction doesn't existed"
+            })
+        }
+        return res
+            .status(201)
+            .json({
+                success : true,
+                sets : auction.sets
+            })
+    }catch(error){
+        console.log("Error while getting sold player list : ",error)
+        res
+        .status(501)
+        .json({
+            success : false,
+            error : error.message
+        })
+    }
+}
+
+const PlayerDetails = async (req,res)=>{
+    const {player_id,auction_id} = req.query
+    if (!player_id || !auction_id){
+        return res
+                .status(401)
+                .json({
+                    success : false, 
+                    message : "Player Id is required"
+                })
+    }
+    try{
+        const auction = await Auction.findOne({ _id: auction_id})
+        if (!auction){
+            return res
+            .status(401)
+            .json({
+                success : false, 
+                message : "Auction or Player doesn't existed"
+            })
+        }
+
+        const player = auction.players.find(
+            (player) => player._id.toString() === player_id
+        );
+        if (!player) {
+            return res
+                .status(403)
+                .json({ message: "Player is not registered in this Auction!" });
+        }
+
+        return res
+            .status(201)
+            .json({
+                success : true,
+                player_details : player
+            })
+    }catch(error){
+        console.log("Error while getting sold player list : ",error)
+        res
+        .status(501)
+        .json({
+            success : false,
+            error : error.message
+        })
+    }
+}
+
 const SoldPlayers = async (req,res)=>{
     const {auction_id} = req.query
     if (!auction_id){
@@ -66,7 +150,8 @@ const CurrentStatus = async (req,res)=>{
             .status(201)
             .json({
                 success : true, 
-                current_status : auction.status
+                current_status : auction.status,
+                auction_details : auction.auction_details
             })
     }catch(error){
         console.log("Error to get Status : ",error)
@@ -159,4 +244,4 @@ const TopBuys = async (req,res)=>{
     }
 }
 
-module.exports = {SoldPlayers,UnSoldPlayers,TopBuys ,CurrentStatus}
+module.exports = {SoldPlayers,UnSoldPlayers,TopBuys ,CurrentStatus,GetSets,PlayerDetails}

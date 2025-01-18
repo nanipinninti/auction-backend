@@ -24,7 +24,7 @@ const login = async (req, res) => {
         }
 
         // Generate token and set it as a cookie
-        generateCustomerToken(res, customer._id);
+        const customer_token = generateCustomerToken(res, customer._id);
 
         // Remove password from the response (optional)
         const customerResponse = { ...customer._doc, password: undefined };
@@ -33,6 +33,7 @@ const login = async (req, res) => {
             success: true,
             message: "Logged in successfully",
             customer: customerResponse,
+            customer_token
         });
     } catch (error) {
         console.error("Error during login:", error);

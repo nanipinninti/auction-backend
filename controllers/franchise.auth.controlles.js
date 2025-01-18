@@ -24,7 +24,7 @@ const login = async (req, res) => {
         }
 
         // Generate token and set it as a cookie
-        generateFranchiseToken(res, franchise._id);
+        const franchise_token = generateFranchiseToken(res, franchise._id);
 
         // Remove password from the response (optional)
         const franchiseResponse = { ...franchise._doc, password: undefined };
@@ -33,6 +33,7 @@ const login = async (req, res) => {
             success: true,
             message: "Logged in successfully",
             franchise: franchiseResponse,
+            franchise_token
         });
     } catch (error) {
         console.error("Error during login:", error);
