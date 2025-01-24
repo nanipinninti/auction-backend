@@ -40,7 +40,8 @@ const LiveAuctions = async (req,res)=>{
     try{
         const auctions = await Auction.find({})
         const live_auctions = auctions
-        .map(({ _id, auction_name, auction_date, auction_img,status }) => ({ _id, auction_name, auction_date, auction_img ,status}))
+        .map(({ _id, auction_name, auction_date, auction_img,status , description,short_name }) => 
+                                ({ _id, auction_name, auction_date, auction_img ,status,description,short_name }))
         .filter(auction => auction.status==="ongoing" ||auction.status==="pause" );
         return res
         .status(201)

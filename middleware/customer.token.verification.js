@@ -1,22 +1,24 @@
 const jwt = require('jsonwebtoken');
 
-const secretKey = process.env.CUSTOMER_JWT_TOKEN; 
-
 const verifyCustomerToken = (req, res, next) => {
-    const token = req.cookies['customer_token'];  
+    // Extract token from cookies or Authorization header
+    const token = req.cookies.customer_token || 
+                  (req.headers.authorization && req.headers.authorization.split(' ')[1]);
 
     if (!token) {
         return res.status(403).send({ message: 'No token provided.' });
     }
 
-    jwt.verify(token, secretKey, (err, decoded) => {
+    jwt.verify(token, process.env.CUSTOMER_JWT_TOKEN, (err, decoded) => {
         if (err) {
+            console.log('Invalid Token:', token);
             return res.status(500).send({ message: 'Failed to authenticate token.' });
         }
 
-        req.customer_id = decoded._id;  
+        // If everything is good, save the decoded token to request for use in other routes
+        req.customer_id = decoded._id;
         next();
     });
 };
 
-module.exports = {verifyCustomerToken};
+module.exports = { verifyCustomerToken };

@@ -85,7 +85,8 @@ const SendPlayer = async (req,res)=>{
         const randomPlayer = players[Math.floor(Math.random() * players.length)];
 
         auction.auction_details.current_player = randomPlayer.player_id
-        auction.auction_details.current_bid = randomPlayer.base_price
+        auction.auction_details.current_bid = randomPlayer.base_price        
+        auction.auction_details.current_franchise = "#"
 
         await auction.save()
         
@@ -105,34 +106,29 @@ const SendPlayer = async (req,res)=>{
 
 const RaiseBid = async (req,res)=>{
     const auction = req.auction;
-    const {amount , franchise_id} = req.body
-    if (!franchise_id || !amount) {
-        return res.status(400).json({ message: "Bid amount or Franchise Id is missing!" });
-    }
+    const {amount} = req.body
     try {
         if (amount <= auction.auction_details.current_bid){
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: "Biddedd by other frnachise!"
             });
         }
-
-        const franchise = auction.franchises.find(
-            (franchise) => franchise.franchise_id.toString() === franchise_id
-        );
-        if (!franchise) {
-            return res.status(403).json({
-                message: "Franchise is not registered for the Auction",
+        if (auction.auction_details.current_franchise===req.franchise_id){
+            return res
+            .status(500).json({
+                success: false,
+                message: "Can't bid conseuctively"
             });
         }
-        auction.current_bid = amount
-        auction.current_franchise = franchise_id
+        auction.auction_details.current_bid = amount
+        auction.auction_details.current_franchise = req.franchise_id
         await auction.save()        
         res.status(201).json({
             success: true
         });
     } catch (error) {
-        console.error("Error Sending Next Player :", error.message);
+        console.error("Error Raising the bid :", error.message);
         res.status(500).json({
             success: false,
             message: "Internal server error",

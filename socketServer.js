@@ -20,12 +20,8 @@ const setupSocket = (io) => {
           socket.emit("joined_room", `Joined room with auction ID: ${auction_id}`);
       });
 
-      socket.on("refresh_bid",()=>{
-        socket.broadcast.emit("refresh_bid");
-      })
-
-      socket.on("refresh_total",()=>{
-        socket.broadcast.emit("refresh_total");
+      socket.on("refresh",()=>{
+        socket.broadcast.emit("refresh");
       })
 
       // Handle disconnection

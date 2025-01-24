@@ -5,6 +5,7 @@ const cors = require("cors"); // Import CORS middleware
 const connectDB = require("./db/connectDB");
 const { setupSocket } = require("./socketServer");
 const cookieParser = require("cookie-parser");
+const path = require('path');
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,9 @@ app.use(
     origin : "*"
   })
 );
+
+// Serve the folder as static
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const server = http.createServer(app);
 const io = new Server(server, {

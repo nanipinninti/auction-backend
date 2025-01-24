@@ -73,29 +73,42 @@ const getFranchiseDetails = async (req,res)=>{
         }
         const franchises = await Auction.aggregate([
             {
-                $match : {
-                    _id : objectId
+                $match: {
+                    _id: objectId
                 }
             },
             {
-                $unwind : "$franchises"
+                $unwind: "$franchises"
             },
             {
-                $lookup : {
-                    from : "franchises",
-                    localField : "franchises.franchise_id",
-                    foreignField : "_id",
-                    as : "FranchiseDate"
+                $lookup: {
+                    from: "franchises",
+                    localField: "franchises.franchise_id",
+                    foreignField: "_id",
+                    as: "Franchise"
                 }
             },
             {
-                $project : {
-                    _id : 0,
-                    FranchiseDate : 1
+                $unwind: "$Franchise"
+            },
+            {
+                $project: {
+                    _id: "$Franchise._id",
+                    franchise_name: "$Franchise.franchise_name",
+                    franchise_url: "$Franchise.franchise_url",
+                    owner_name: "$Franchise.owner_name"
                 }
             }
-        ])
-        return res.status(200).json(franchises)
+        ]);
+        
+        // Transform into a map using _id as the key
+        const franchiseMap = franchises.reduce((acc, item) => {
+            const { _id, ...rest } = item;
+            acc[_id] = rest; // Use _id as the key and the rest of the fields as the value
+            return acc;
+        }, {});
+    
+        return res.status(200).json(franchiseMap)
     }catch(error){
         console.log("Error : ",error)
         return res.status(201).json({

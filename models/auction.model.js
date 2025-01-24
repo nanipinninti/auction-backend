@@ -14,6 +14,14 @@ const auctionSchema = new mongoose.Schema(
             required: true,
             unique: true
         },
+        description : {
+            type : String,
+            default : "No Description"
+        },
+        short_name:{
+            type : String,
+            required : true
+        },
         auction_img: {
             type: String,
             default: "#"

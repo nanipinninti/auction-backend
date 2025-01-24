@@ -7,10 +7,10 @@ const router = express.Router();
 const addAuction = async (req, res) => {
     try {
         const customer_id = req.customer_id; // From the authenticated customer
-        const { auction_name, auction_date, auction_time, players = [], franchises = [], sets = [] } = req.body;
+        const { short_name,auction_name, auction_date, auction_time, players = [], franchises = [], sets = [] ,description} = req.body;
 
         // Check for required fields (auction_name, auction_date, etc.)
-        if (!auction_name || !auction_date || !auction_time) {
+        if (!auction_name || !auction_date || !auction_time || !short_name ) {
             return res.status(400).json({ message: 'Missing required fields: auction_name, auction_date, auction_time' });
         }
         const auction = await Auction.findOne({auction_name : auction_name})
@@ -22,6 +22,9 @@ const addAuction = async (req, res) => {
             customer_id,
             auction_name,
             auction_date,
+            short_name,
+            auction_img : req.auction_img_url,
+            description,
             auction_time,
             players, 
             franchises, 

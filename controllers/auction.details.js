@@ -151,7 +151,8 @@ const CurrentStatus = async (req,res)=>{
             .json({
                 success : true, 
                 current_status : auction.status,
-                auction_details : auction.auction_details
+                auction_details : auction.auction_details,
+                bid_ratio : auction.bid_ratio
             })
     }catch(error){
         console.log("Error to get Status : ",error)
